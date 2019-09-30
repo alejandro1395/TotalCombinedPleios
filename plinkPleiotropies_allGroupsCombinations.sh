@@ -44,30 +44,35 @@ endocrine="endocrine system disease"
 #LOOP THROUGH ALL GROUPS OF DISEASES ALONE
 
 groups=("skin" "skeletal" "respiratory" "reproductive" "infectious" "immune" "kidney" "cardio" "metabolic" "headneck" "nervous" "eye" "endocrine" "cancer")
-for i in "${groups[@]}"; do
-	j="$i[@]"
-    	a=("${!j}")
-	for t in "${groups[@]}"; do
-    		g="$t[@]"
-    		b=("${!g}")
-		mkdir -p ${SRC}Combination/${i}_${t}
+max=${#groups[@]}
+for ((idxA=0; idxA<max; idxA++)); do
+for ((idxB=idxA; idxB<max; idxB++)); do
+         # iterate idxB from idxA to length
+
+        j="${groups[$idxA]}"
+	i="$j[@]"
+    	a=("${!i}")
+        g="${groups[$idxB]}"
+	p="$g[@]"
+        b=("${!p}")
+        echo ${j}_${g}
+        mkdir -p ${SRC}Combination/${j}_${g}/
+        mkdir -p ${OUTPUT}Combination/${j}_${g}/
 
 #FORMATING GROUPS OF DISEASES IN STRINGS
         separator="', '"
 	
 	#Disease_GroupA
         diseasesGroupA="$( printf "${separator}%s" "${a[@]}" )"
-        mkdir -p ${OUTPUT}Combination/${i}_${t}/${i}
         diseasesGroupA="${diseasesGroupA:${#separator}}" # remove leading separator
-	echo $diseasesGroupA
         diseasesA=$(echo "('$diseasesGroupA')")
-	
+	echo $diseasesA
+
 	#Disease_GroupB
 	diseasesGroupB="$( printf "${separator}%s" "${b[@]}" )"
         diseasesGroupB="${diseasesGroupB:${#separator}}" # remove leading separator
-	echo $diseasesGroupB
         diseasesB=$(echo "('$diseasesGroupB')")
-        FILE=${SRC}Combination/${i}_${t}/paired_pleios.sh
+        FILE=${SRC}Combination/${j}_${g}/paired_pleios.sh
 
 cat  > $FILE << EOT
 #!/bin/bash
@@ -87,26 +92,26 @@ module load Python
 
         sqlite3 ${INPUT}GWASpleiotropies.sqlite "SELECT DISTINCT SNPA,DiseaseA,RiskAllA,OnsetA,POS1,SNPB,DiseaseB,RiskAllB,OnsetB,POS2,ID,CHR FROM filteredPairs
 WHERE R2 >= 0.8 AND ((GroupA IN $(echo $diseasesA) AND GroupB IN $(echo $diseasesB)) OR (GroupB IN $(echo $diseasesA) AND GroupA IN $(echo $diseasesB))) 
-AND CHR != '' ;" > ${OUTPUT}Combination/${i}_${t}/pleios.txt
+AND CHR != '' ;" > ${OUTPUT}Combination/${j}_${g}/pleios.txt
 
         ### Construct haplotypes with plink
-        cat ${OUTPUT}Combination/${i}_${t}/pleios.txt | while read line; do
+        cat ${OUTPUT}Combination/${j}_${g}/pleios.txt | while read line; do
          snpA=\$(echo "\$line" | cut -f 1);
          chr=\$(echo "\$line" | cut -f 12);
          echo \$snpA;
          snpB=\$(echo "\$line" | cut -f 6);
-         echo -e '*' \${snpA}'\t'\${snpB} > ${OUTPUT}Combination/${i}_${t}/snps.hlist;
-         sed -i -e 's/ /\t/g' ${OUTPUT}Combination/${i}_${t}/snps.hlist;
+         echo -e '*' \${snpA}'\t'\${snpB} > ${OUTPUT}Combination/${j}_${g}/snps.hlist;
+         sed -i -e 's/ /\t/g' ${OUTPUT}Combination/${j}_${g}/snps.hlist;
          ${BIN}plink --file ${VCF}chr\${chr}_CEU_genotypes \
---hap ${OUTPUT}Combination/${i}_${t}/snps.hlist \
+--hap ${OUTPUT}Combination/${j}_${g}/snps.hlist \
 --hap-freq \
 --noweb \
---out ${OUTPUT}Combination/${i}_${t}/\${snpA}_\${snpB};
-        grep -v LOCUS ${OUTPUT}Combination/${i}_${t}/\${snpA}_\${snpB}.frq.hap | awk '{print \$2,\$3}' > ${OUTPUT}Combination/${i}_${t}/\${snpA}_\${snpB}.fhtp
+--out ${OUTPUT}Combination/${j}_${g}/\${snpA}_\${snpB};
+        grep -v LOCUS ${OUTPUT}Combination/${j}_${g}/\${snpA}_\${snpB}.frq.hap | awk '{print \$2,\$3}' > ${OUTPUT}Combination/${j}_${g}/\${snpA}_\${snpB}.fhtp
 done
 
 	### 3 #### Create pleiotropies agon/antagon with early/late classif
-        cat ${OUTPUT}Combination/${i}_${t}/pleios.txt | while read line; do
+        cat ${OUTPUT}Combination/${j}_${g}/pleios.txt | while read line; do
  snpA=\$(echo "\$line" | cut -f 1 );
         snpB=\$(echo "\$line" | cut -f 6 );
         nameA=\$(echo "\$line" | cut -f 2 );
@@ -121,14 +126,14 @@ done
         riskHap=\$(echo "\$line" | awk -F"\t" '{print \$3\$8}');
 ### Python script to count pleiotropies in haplotypes
         for n in {10..60};
-        do mkdir -p ${OUTPUT}Combination/${i}_${t}/Age_threeshold_\${n}/;
-        python3 ./countPleiotropies.py ${OUTPUT}Combination/${i}_${t}/\${snpA}_\${snpB}.fhtp \${n} \${riskHap} \${snpA} "\${nameA}" \${RiskAllA} \${PosA} \
-\${OnsetA} \${snpB} "\${nameB}" \${RiskAllB} \${PosB} \${OnsetB} \${chr} ${OUTPUT}Combination/${i}_${t}/Age_threeshold_\${n}/;
+        do mkdir -p ${OUTPUT}Combination/${j}_${g}/Age_threeshold_\${n}/;
+        python3 ${SRC}countPleiotropies.py ${OUTPUT}Combination/${j}_${g}/\${snpA}_\${snpB}.fhtp \${n} \${riskHap} \${snpA} "\${nameA}" \${RiskAllA} \${PosA} \
+\${OnsetA} \${snpB} "\${nameB}" \${RiskAllB} \${PosB} \${OnsetB} \${chr} ${OUTPUT}Combination/${j}_${g}/Age_threeshold_\${n}/;
     done; done;
 EOT
 
-sbatch ${SRC}Combination/${i}_${t}/paired_pleios.sh
-cat > ${SRC}Combination/${i}_${t}/SinglePleios.sh << EOT
+sbatch ${SRC}Combination/${j}_${g}/paired_pleios.sh
+cat > ${SRC}Combination/${j}_${g}/SinglePleios.sh << EOT
 #!/bin/bash
 
 #set the job name
@@ -144,9 +149,9 @@ module load Python
 
 ### Python script to count pleiotropies in haplotypes
         for m in {10..60};
-         do mkdir -p ${OUTPUT}Combination/${i}_${t}/Age_threeshold_\${m}/;
-\python3 ${SRC}SinglePleios_allGroupsCombinations.py \${m} ${OUTPUT}Combination/${i}_${t}/Age_threeshold_\${m}/ "$diseasesA" "$diseasesB"
+         do mkdir -p ${OUTPUT}Combination/${j}_${g}/Age_threeshold_\${m}/;
+\python3 ${SRC}SinglePleios_allGroupsCombinations.py \${m} ${OUTPUT}Combination/${j}_${g}/Age_threeshold_\${m}/ "$diseasesA" "$diseasesB"
     done;
 EOT
-   	sbatch ${SRC}Combination/${i}_${t}/SinglePleios.sh
+   	sbatch ${SRC}Combination/${j}_${g}/SinglePleios.sh
 done; done

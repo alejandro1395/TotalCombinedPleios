@@ -46,5 +46,5 @@ done
 ### Python script to count pleiotropies in haplotypes
         for n in {10..60};
         do mkdir -p /homes/users/avalenzuela/scratch/PhD_EvoGenomics/1st_year/StratiPleios_Sep2019/results/Combination/reproductive_infectious/Age_threeshold_${n}/;
-        python3 ./countPleiotropies.py /homes/users/avalenzuela/scratch/PhD_EvoGenomics/1st_year/StratiPleios_Sep2019/results/Combination/reproductive_infectious/${snpA}_${snpB}.fhtp ${n} ${riskHap} ${snpA} "${nameA}" ${RiskAllA} ${PosA} ${OnsetA} ${snpB} "${nameB}" ${RiskAllB} ${PosB} ${OnsetB} ${chr} /homes/users/avalenzuela/scratch/PhD_EvoGenomics/1st_year/StratiPleios_Sep2019/results/Combination/reproductive_infectious/Age_threeshold_${n}/;
+        python3 /homes/users/avalenzuela/scratch/PhD_EvoGenomics/1st_year/StratiPleios_Sep2019/src/countPleiotropies.py /homes/users/avalenzuela/scratch/PhD_EvoGenomics/1st_year/StratiPleios_Sep2019/results/Combination/reproductive_infectious/${snpA}_${snpB}.fhtp ${n} ${riskHap} ${snpA} "${nameA}" ${RiskAllA} ${PosA} ${OnsetA} ${snpB} "${nameB}" ${RiskAllB} ${PosB} ${OnsetB} ${chr} /homes/users/avalenzuela/scratch/PhD_EvoGenomics/1st_year/StratiPleios_Sep2019/results/Combination/reproductive_infectious/Age_threeshold_${n}/;
     done; done;

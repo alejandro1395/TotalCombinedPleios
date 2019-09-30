@@ -45,5 +45,5 @@ WHERE R2 >= 0.8 AND (GroupA IN ('eye disease') OR GroupB IN ('eye disease')) AND
 ### Python script to count pleiotropies in haplotypes
         for i in {10..60};
         do mkdir -p /homes/users/avalenzuela/scratch/PhD_EvoGenomics/1st_year/StratiPleios_Sep2019/results/Alone/eye/Age_threeshold_${i}/;
-        python3 ./countPleiotropies.py /homes/users/avalenzuela/scratch/PhD_EvoGenomics/1st_year/StratiPleios_Sep2019/results/Alone/eye/${snpA}_${snpB}.fhtp ${i} ${riskHap} ${snpA} "${nameA}" ${RiskAllA} ${PosA} ${OnsetA} ${snpB} "${nameB}" ${RiskAllB} ${PosB} ${OnsetB} ${chr} /homes/users/avalenzuela/scratch/PhD_EvoGenomics/1st_year/StratiPleios_Sep2019/results/Alone/eye/Age_threeshold_${i}/;
+        python3 /homes/users/avalenzuela/scratch/PhD_EvoGenomics/1st_year/StratiPleios_Sep2019/src/countPleiotropies.py /homes/users/avalenzuela/scratch/PhD_EvoGenomics/1st_year/StratiPleios_Sep2019/results/Alone/eye/${snpA}_${snpB}.fhtp ${i} ${riskHap} ${snpA} "${nameA}" ${RiskAllA} ${PosA} ${OnsetA} ${snpB} "${nameB}" ${RiskAllB} ${PosB} ${OnsetB} ${chr} /homes/users/avalenzuela/scratch/PhD_EvoGenomics/1st_year/StratiPleios_Sep2019/results/Alone/eye/Age_threeshold_${i}/;
     done; done;

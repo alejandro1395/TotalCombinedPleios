@@ -30,7 +30,11 @@ out_file1 = OUTPATH + "SinglePleiotropiesOut.tsv"
 out_file2 = OUTPATH + "SinglePleiosLoc.tsv"
 age_threeshold = int(sys.argv[1])
 diseaseA_groups = eval(sys.argv[3])
+if type(diseaseA_groups) is str:
+    diseaseA_groups = [str(diseaseA_groups)]
 diseaseB_groups = eval(sys.argv[4])
+if type(diseaseB_groups) is str:
+    diseaseB_groups = [str(diseaseB_groups)]
 
 ## 1st strategy -> Single SNPs influencing more than one disease
 

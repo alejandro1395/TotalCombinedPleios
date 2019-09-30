@@ -112,7 +112,7 @@ WHERE R2 >= 0.8 AND (GroupA IN $(echo $diseases) OR GroupB IN $(echo $diseases))
 ### Python script to count pleiotropies in haplotypes
         for i in {10..60};
         do mkdir -p ${OUTPUT}Alone/${i}/Age_threeshold_\${i}/;
-        python3 ./countPleiotropies.py ${OUTPUT}Alone/${i}/\${snpA}_\${snpB}.fhtp \${i} \${riskHap} \${snpA} "\${nameA}" \${RiskAllA} \${PosA} \
+        python3 ${SRC}countPleiotropies.py ${OUTPUT}Alone/${i}/\${snpA}_\${snpB}.fhtp \${i} \${riskHap} \${snpA} "\${nameA}" \${RiskAllA} \${PosA} \
 \${OnsetA} \${snpB} "\${nameB}" \${RiskAllB} \${PosB} \${OnsetB} \${chr} ${OUTPUT}Alone/${i}/Age_threeshold_\${i}/;
     done; done;
 EOT

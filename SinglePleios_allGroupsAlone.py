@@ -24,7 +24,8 @@ CREATING DATABASE WITHDIFF PLEIOTROPIES
 PATH = "/homes/users/avalenzuela/scratch/PhD_EvoGenomics/1st_year/StratiPleios_Jul2019/Cancer/"
 OUTPATH = sys.argv[2]
 diseases = eval(sys.argv[3])
-print(type(diseases))
+if type(diseases) is str:
+    diseases = [str(diseases)]
 catalog = pd.read_csv(PATH + "data/GWAS_Age_merged.csv", sep='\t', low_memory=False)#panda creation
 LD = pd.read_csv("~/scratch/PhD_EvoGenomics/1st_year/InfecPleiotropies_Apr2019/data/RAW_PROJECT/CEU_mod.csv", sep='\t')
 SNPs_multiple_diseases = {}
